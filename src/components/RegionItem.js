@@ -4,38 +4,42 @@ import { Col, Row, Button, Card } from 'react-bootstrap';
 
 
 const RegionItem = ({ region, technicians }) => {
-  console.log(region)
   const [editMode, setEditMode] = useState(false);
-  const [technicianId, setTechnicianId] = useState(region.technicianId);
-  const [activities, setActivities] = useState([]);
-  const [activityDescription, setActivityDescription] = useState('');
-  const [duration, setDuration] = useState('');
+  const [technicianId, setTechnicianId] = useState(region.technician_id);
+  //const [activities, setActivities] = useState([]);
+  //const [description, setDescription] = useState('');
+ //const [duration, setDuration] = useState('');
 
-  const fetchActivities = async () => {
-    const resultActivities = await axios(`http://localhost:8080/api/activities?regionId=${region.id}`);
-    setActivities(resultActivities.data);
-  };
+
+  // const fetchActivities = async () => {
+  //   const resultActivities = await axios(`http://localhost:8080/api/activities/${region.id}`);
+  //   setActivities(resultActivities.data);
+  // };
 
   const handleEdit = () => {
     setEditMode(true);
-    fetchActivities();
+    //fetchActivities();
   };
 
   const handleSave = async () => {
-    await axios.patch(`http://localhost:8080/api/regions/${region.id}`, { technicianId });
-    setEditMode(false);
+    try {
+      await axios.put(`http://localhost:8080/api/regions/${region.id}`, { technicianId } );
+      setEditMode(false);
+    } catch (error) {
+      console.error('Error saving region:', error);
+    }
   };
 
-  const handleAddActivity = async () => {
-    await axios.post('http://localhost:8080/api/activities', {
-      regionId: region.id,
-      desciption: activityDescription,
-      duration: parseInt(duration)
-    });
-    fetchActivities();
-    setActivityDescription('');
-    setDuration('');
-  };
+  // const handleAddActivity = async () => {
+  //   await axios.post('http://localhost:8080/api/activities', {
+  //     regionId: region.id,
+  //     desciption: description,
+  //     duration: parseInt(duration)
+  //   });
+  //   fetchActivities();
+  //   setDescription('');
+  //   setDuration('');
+  // };
 
   return (
     <Col className='text-center py-4'>
@@ -47,7 +51,7 @@ const RegionItem = ({ region, technicians }) => {
           <div>
             <select value={technicianId} onChange={(e) => setTechnicianId(parseInt(e.target.value))}>
               {technicians.map(technician => (
-              <option key={technician.id} value={technician.technician_id}>{technician.last_name}</option>
+              <option key={technician.id} value={technician.id}>{technician.last_name}</option>
               ))}
             </select>
             <Button onClick={handleSave} className='btn btn-secondary'>Zapisz</Button>
@@ -56,11 +60,11 @@ const RegionItem = ({ region, technicians }) => {
           
           <div>
             <h3>Działania</h3>
-            <input
+            {/* <input
               type="text"
               placeholder="Opis działania"
-              value={activityDescription}
-              onChange={(e) => setActivityDescription(e.target.value)}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
             />
             <input
               type="number"
@@ -74,12 +78,12 @@ const RegionItem = ({ region, technicians }) => {
               {activities.map(activity => (
                 <li key={activity.id}>{activity.desciption} - {activity.duration} min</li>
               ))}
-            </ul>
+            </ul> */}
           </div>
         </Col>
       ) : (
         <div>
-          <p>Serwisant: {technicians.find(s => s.id === region.technicianId)?.nazwisko || 'Brak przypisanego serwisanta'}</p>
+          <p>Serwisant: {technicians.find(technician => technician.id === region.technician_id)?.last_name || 'Brak przypisanego serwisanta'}</p>
           <Button onClick={handleEdit} className='btn btn-secondary'>Edytuj</Button>
         </div>
       )}

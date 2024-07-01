@@ -8,7 +8,8 @@ function App() {
     <div className="App">
       <h1 className='text-center py-4'>Lista Obszarów</h1>
       <RegionList />
-      <ActivityReport />
+      {/* <h2 className='text-center'>Raporty</h2> */}
+      {/* <ActivityReport /> */}
     </div>
   );
 }
